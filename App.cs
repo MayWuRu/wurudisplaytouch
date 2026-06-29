@@ -11,6 +11,53 @@ using System.Linq;
 
 namespace WuRuDisplayTouch
 {
+    public static class Loc
+    {
+        public static string Lang { get; set; }
+
+        static Loc()
+        {
+            Lang = "EN";
+        }
+
+        private static Dictionary<string, string[]> dict = new Dictionary<string, string[]>()
+        {
+            { "SettingsTitle", new[] { "WuRuDisplayTouch Settings", "ตั้งค่า WuRuDisplayTouch" } },
+            { "RunOnStartup", new[] { "Run on Startup", "เปิดโปรแกรมพร้อม Windows" } },
+            { "TouchAutoMode", new[] { "Touchscreen Auto Mode", "เปิด/ปิด Touchscreen อัตโนมัติ" } },
+            { "GlobalEnforcer", new[] { "Global Display Enforcer", "ระบบปรับตั้งค่าหน้าจออัตโนมัติ" } },
+            { "PerMonitorSettings", new[] { "Per-Monitor Settings", "การตั้งค่าแยกตามจอภาพ" } },
+            { "SelectMonitor", new[] { "Select Monitor:", "เลือกหน้าจอ:" } },
+            { "EnableForThisMonitor", new[] { "Enable Display Enforcer for this monitor", "เปิดใช้งานบังคับตั้งค่าเฉพาะหน้าจอนี้" } },
+            { "Resolution", new[] { "Resolution:", "ความละเอียด:" } },
+            { "RefreshRate", new[] { "Refresh Rate:", "อัตรารีเฟรช:" } },
+            { "Save", new[] { "Save", "บันทึก" } },
+            { "Cancel", new[] { "Cancel", "ยกเลิก" } },
+            { "AutoRes", new[] { "Auto (Max supported)", "Auto (ดึงค่าสูงสุดที่จอรับได้)" } },
+            { "AutoRef", new[] { "Auto (Max supported)", "Auto (สูงสุดที่รองรับ)" } },
+            { "NoMonitors", new[] { "No Monitors Found", "ไม่พบหน้าจอใดๆ" } },
+            { "Internal", new[] { "(Internal)", "(จอติดเครื่อง)" } },
+            { "External", new[] { "(External)", "(จอนอก)" } },
+            { "ForceEnable", new[] { "Force Enable Touchscreen", "เปิด Touchscreen" } },
+            { "ForceDisable", new[] { "Force Disable Touchscreen", "ปิด Touchscreen" } },
+            { "Settings", new[] { "Settings...", "การตั้งค่า..." } },
+            { "Exit", new[] { "Exit", "ออก" } },
+            { "TouchEnabled", new[] { "Touchscreen Enabled (Internal display active)", "เปิด Touchscreen (จอหลักทำงาน)" } },
+            { "TouchDisabled", new[] { "Touchscreen Disabled (External display active)", "ปิด Touchscreen (ต่อจอนอก)" } },
+            { "Note", new[] { "*Note: If Auto mode causes messy scaling (especially on 2K monitors),\n please manually lock the resolution to match your physical monitor.", "*หมายเหตุ: หากใช้ Auto แล้วสเกลภาพเพี้ยน (โดยเฉพาะจอ 2K)\n แนะนำให้เลือกล็อคความละเอียดให้ตรงกับสเปคจอเอง" } },
+            { "Language", new[] { "Language / ภาษา:", "Language / ภาษา:" } }
+        };
+
+        public static string Get(string key)
+        {
+            if (dict.ContainsKey(key))
+            {
+                return Lang == "TH" ? dict[key][1] : dict[key][0];
+            }
+            return key;
+        }
+    }
+
     static class Program
     {
         [STAThread]
@@ -18,6 +65,7 @@ namespace WuRuDisplayTouch
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+            Loc.Lang = Settings.Language;
             Application.Run(new TrayApplicationContext());
         }
     }
@@ -26,6 +74,12 @@ namespace WuRuDisplayTouch
     {
         private const string GlobalRegistryKeyPath = @"Software\WuRuDisplayTouch";
         private const string BaseRegistryKeyPath = @"Software\WuRuDisplayTouch\Displays";
+
+        public static string Language
+        {
+            get { return GetGlobalRegistryStringValue("Language", "EN"); }
+            set { SetGlobalRegistryStringValue("Language", value); }
+        }
 
         public static bool TouchAutoMode
         {
@@ -63,6 +117,35 @@ namespace WuRuDisplayTouch
                 using (RegistryKey key = Registry.CurrentUser.CreateSubKey(GlobalRegistryKeyPath))
                 {
                     key.SetValue(name, value, RegistryValueKind.DWord);
+                }
+            }
+            catch { }
+        }
+
+        private static string GetGlobalRegistryStringValue(string name, string defaultValue)
+        {
+            try
+            {
+                using (RegistryKey key = Registry.CurrentUser.OpenSubKey(GlobalRegistryKeyPath))
+                {
+                    if (key != null)
+                    {
+                        object val = key.GetValue(name);
+                        if (val != null) return val.ToString();
+                    }
+                }
+            }
+            catch { }
+            return defaultValue;
+        }
+
+        private static void SetGlobalRegistryStringValue(string name, string value)
+        {
+            try
+            {
+                using (RegistryKey key = Registry.CurrentUser.CreateSubKey(GlobalRegistryKeyPath))
+                {
+                    key.SetValue(name, value, RegistryValueKind.String);
                 }
             }
             catch { }
@@ -221,7 +304,7 @@ namespace WuRuDisplayTouch
         {
             get 
             {
-                string type = IsInternal ? "(จอติดเครื่อง)" : "(จอนอก)";
+                string type = IsInternal ? Loc.Get("Internal") : Loc.Get("External");
                 string niceAdapter = AdapterName.Replace("\\\\.\\", "");
                 return string.Format("{0} {1} - {2}", niceAdapter, type, DisplayName);
             }
@@ -241,7 +324,7 @@ namespace WuRuDisplayTouch
 
         public override string ToString()
         {
-            if (IsAuto) return "Auto (ดึงค่าสูงสุดที่จอรับได้)";
+            if (IsAuto) return Loc.Get("AutoRes");
             return string.Format("{0} x {1}", Width, Height);
         }
 
@@ -265,7 +348,7 @@ namespace WuRuDisplayTouch
 
         public override string ToString()
         {
-            if (IsAuto) return "Auto (สูงสุดที่รองรับ)";
+            if (IsAuto) return Loc.Get("AutoRef");
             return string.Format("{0} Hz", RefreshRate);
         }
         
@@ -292,14 +375,20 @@ namespace WuRuDisplayTouch
 
     public class SettingsForm : Form
     {
+        private Label lblLang;
+        private ComboBox cmbLang;
         private CheckBox chkRunStartup;
         private CheckBox chkTouchAuto;
         private CheckBox chkGlobalEnforcer;
         private GroupBox grpMonitor;
+        private Label lblMonitor;
         private ComboBox cmbMonitors;
         private CheckBox chkEnableEnforcer;
+        private Label lblRes;
         private ComboBox cmbResolution;
+        private Label lblRefresh;
         private ComboBox cmbRefreshRate;
+        private Label lblNote;
         private Button btnSave;
         private Button btnCancel;
         
@@ -313,13 +402,13 @@ namespace WuRuDisplayTouch
         {
             this.monitors = allMonitors;
             InitializeComponent();
+            UpdateTexts();
             LoadInitialSettings();
         }
 
         private void InitializeComponent()
         {
-            this.Text = "WuRuDisplayTouch Settings";
-            this.Size = new Size(420, 460);
+            this.Size = new Size(420, 500);
             this.FormBorderStyle = FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
@@ -327,22 +416,35 @@ namespace WuRuDisplayTouch
 
             int yPos = 15;
 
+            lblLang = new Label();
+            lblLang.AutoSize = true;
+            lblLang.Location = new Point(20, yPos + 3);
+            this.Controls.Add(lblLang);
+
+            cmbLang = new ComboBox();
+            cmbLang.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbLang.Items.Add("English (EN)");
+            cmbLang.Items.Add("ภาษาไทย (TH)");
+            cmbLang.SelectedIndex = (Loc.Lang == "TH") ? 1 : 0;
+            cmbLang.Location = new Point(140, yPos);
+            cmbLang.Width = 150;
+            cmbLang.SelectedIndexChanged += CmbLang_SelectedIndexChanged;
+            this.Controls.Add(cmbLang);
+
+            yPos += 35;
             chkRunStartup = new CheckBox();
-            chkRunStartup.Text = "เปิดโปรแกรมพร้อม Windows (Run on Startup)";
             chkRunStartup.AutoSize = true;
             chkRunStartup.Location = new Point(20, yPos);
             this.Controls.Add(chkRunStartup);
 
             yPos += 30;
             chkTouchAuto = new CheckBox();
-            chkTouchAuto.Text = "ระบบเปิด/ปิด Touchscreen อัตโนมัติ (Touch Auto Mode)";
             chkTouchAuto.AutoSize = true;
             chkTouchAuto.Location = new Point(20, yPos);
             this.Controls.Add(chkTouchAuto);
 
             yPos += 30;
             chkGlobalEnforcer = new CheckBox();
-            chkGlobalEnforcer.Text = "ระบบปรับตั้งค่าหน้าจออัตโนมัติ (Global Display Enforcer)";
             chkGlobalEnforcer.AutoSize = true;
             chkGlobalEnforcer.Location = new Point(20, yPos);
             chkGlobalEnforcer.CheckedChanged += (s, e) => { grpMonitor.Enabled = chkGlobalEnforcer.Checked; };
@@ -350,14 +452,12 @@ namespace WuRuDisplayTouch
 
             yPos += 35;
             grpMonitor = new GroupBox();
-            grpMonitor.Text = "การตั้งค่าแยกตามจอภาพ";
             grpMonitor.Size = new Size(365, 260);
             grpMonitor.Location = new Point(20, yPos);
             this.Controls.Add(grpMonitor);
 
             int gyPos = 25;
-            Label lblMonitor = new Label();
-            lblMonitor.Text = "เลือกหน้าจอ (Monitor):";
+            lblMonitor = new Label();
             lblMonitor.AutoSize = true;
             lblMonitor.Location = new Point(15, gyPos);
             grpMonitor.Controls.Add(lblMonitor);
@@ -372,7 +472,6 @@ namespace WuRuDisplayTouch
 
             gyPos += 35;
             chkEnableEnforcer = new CheckBox();
-            chkEnableEnforcer.Text = "เปิดใช้งานบังคับตั้งค่าเฉพาะหน้าจอนี้";
             chkEnableEnforcer.AutoSize = true;
             chkEnableEnforcer.Location = new Point(15, gyPos);
             chkEnableEnforcer.CheckedChanged += (s, e) => { 
@@ -383,8 +482,7 @@ namespace WuRuDisplayTouch
             grpMonitor.Controls.Add(chkEnableEnforcer);
 
             gyPos += 35;
-            Label lblRes = new Label();
-            lblRes.Text = "ความละเอียด (Resolution):";
+            lblRes = new Label();
             lblRes.AutoSize = true;
             lblRes.Location = new Point(15, gyPos);
             grpMonitor.Controls.Add(lblRes);
@@ -398,8 +496,7 @@ namespace WuRuDisplayTouch
             grpMonitor.Controls.Add(cmbResolution);
 
             gyPos += 35;
-            Label lblRefresh = new Label();
-            lblRefresh.Text = "อัตรารีเฟรช (Refresh Rate):";
+            lblRefresh = new Label();
             lblRefresh.AutoSize = true;
             lblRefresh.Location = new Point(15, gyPos);
             grpMonitor.Controls.Add(lblRefresh);
@@ -413,24 +510,77 @@ namespace WuRuDisplayTouch
             grpMonitor.Controls.Add(cmbRefreshRate);
 
             gyPos += 28;
-            Label lblNote = new Label();
-            lblNote.Text = "*หมายเหตุ: หากใช้ Auto แล้วสเกลภาพเพี้ยน (โดยเฉพาะจอ 2K)\n แนะนำให้เลือกล็อคความละเอียดให้ตรงกับสเปคจอเองครับ";
+            lblNote = new Label();
             lblNote.AutoSize = true;
             lblNote.ForeColor = Color.DimGray;
             lblNote.Location = new Point(15, gyPos);
             grpMonitor.Controls.Add(lblNote);
 
             btnSave = new Button();
-            btnSave.Text = "บันทึก (Save)";
             btnSave.Location = new Point(200, yPos + 275);
             btnSave.Click += BtnSave_Click;
             this.Controls.Add(btnSave);
 
             btnCancel = new Button();
-            btnCancel.Text = "ยกเลิก (Cancel)";
             btnCancel.Location = new Point(290, yPos + 275);
             btnCancel.Click += (s, e) => this.Close();
             this.Controls.Add(btnCancel);
+        }
+
+        private void CmbLang_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            Loc.Lang = cmbLang.SelectedIndex == 1 ? "TH" : "EN";
+            Settings.Language = Loc.Lang;
+            UpdateTexts();
+        }
+
+        private void UpdateTexts()
+        {
+            this.Text = Loc.Get("SettingsTitle");
+            lblLang.Text = Loc.Get("Language");
+            chkRunStartup.Text = Loc.Get("RunOnStartup");
+            chkTouchAuto.Text = Loc.Get("TouchAutoMode");
+            chkGlobalEnforcer.Text = Loc.Get("GlobalEnforcer");
+            grpMonitor.Text = Loc.Get("PerMonitorSettings");
+            lblMonitor.Text = Loc.Get("SelectMonitor");
+            chkEnableEnforcer.Text = Loc.Get("EnableForThisMonitor");
+            lblRes.Text = Loc.Get("Resolution");
+            lblRefresh.Text = Loc.Get("RefreshRate");
+            lblNote.Text = Loc.Get("Note");
+            btnSave.Text = Loc.Get("Save");
+            btnCancel.Text = Loc.Get("Cancel");
+
+            if (cmbMonitors.Items.Count > 0 && cmbMonitors.Items[0] is string)
+            {
+                cmbMonitors.Items[0] = Loc.Get("NoMonitors");
+            }
+            else if (cmbMonitors.Items.Count > 0)
+            {
+                int selectedIdx = cmbMonitors.SelectedIndex;
+                var items = new List<MonitorInfo>();
+                foreach (var item in cmbMonitors.Items) items.Add((MonitorInfo)item);
+                cmbMonitors.Items.Clear();
+                foreach (var m in items) cmbMonitors.Items.Add(m);
+                cmbMonitors.SelectedIndex = selectedIdx;
+            }
+            
+            if (cmbResolution.Items.Count > 0) {
+                int selectedIdx = cmbResolution.SelectedIndex;
+                var items = new List<ResolutionItem>();
+                foreach (var item in cmbResolution.Items) items.Add((ResolutionItem)item);
+                cmbResolution.Items.Clear();
+                foreach (var m in items) cmbResolution.Items.Add(m);
+                cmbResolution.SelectedIndex = selectedIdx;
+            }
+
+            if (cmbRefreshRate.Items.Count > 0) {
+                int selectedIdx = cmbRefreshRate.SelectedIndex;
+                var items = new List<RefreshRateItem>();
+                foreach (var item in cmbRefreshRate.Items) items.Add((RefreshRateItem)item);
+                cmbRefreshRate.Items.Clear();
+                foreach (var m in items) cmbRefreshRate.Items.Add(m);
+                cmbRefreshRate.SelectedIndex = selectedIdx;
+            }
         }
 
         private bool CheckIfStartupTaskExists()
@@ -486,7 +636,7 @@ namespace WuRuDisplayTouch
 
             if (monitors == null || monitors.Count == 0)
             {
-                cmbMonitors.Items.Add("ไม่พบหน้าจอใดๆ (No Monitors Found)");
+                cmbMonitors.Items.Add(Loc.Get("NoMonitors"));
                 cmbMonitors.SelectedIndex = 0;
                 cmbMonitors.Enabled = false;
                 chkEnableEnforcer.Enabled = false;
@@ -719,6 +869,10 @@ namespace WuRuDisplayTouch
     public class TrayApplicationContext : ApplicationContext
     {
         private NotifyIcon trayIcon;
+        private MenuItem miEnable;
+        private MenuItem miDisable;
+        private MenuItem miSettings;
+        private MenuItem miExit;
 
         public TrayApplicationContext()
         {
@@ -732,16 +886,21 @@ namespace WuRuDisplayTouch
                 appIcon = SystemIcons.Shield; 
             }
 
+            miEnable = new MenuItem(Loc.Get("ForceEnable"), EnableTouch);
+            miDisable = new MenuItem(Loc.Get("ForceDisable"), DisableTouch);
+            miSettings = new MenuItem(Loc.Get("Settings"), OpenSettings);
+            miExit = new MenuItem(Loc.Get("Exit"), Exit);
+
             trayIcon = new NotifyIcon()
             {
                 Icon = appIcon,
                 ContextMenu = new ContextMenu(new MenuItem[] {
-                    new MenuItem("เปิด Touchscreen (Force Enable)", EnableTouch),
-                    new MenuItem("ปิด Touchscreen (Force Disable)", DisableTouch),
+                    miEnable,
+                    miDisable,
                     new MenuItem("-"),
-                    new MenuItem("การตั้งค่า (Settings)...", OpenSettings),
+                    miSettings,
                     new MenuItem("-"),
-                    new MenuItem("ออก (Exit)", Exit)
+                    miExit
                 }),
                 Visible = true,
                 Text = "WuRuDisplayTouch"
@@ -754,6 +913,15 @@ namespace WuRuDisplayTouch
             CheckDisplayAndToggleTouch();
         }
 
+        public void UpdateLanguage()
+        {
+            miEnable.Text = Loc.Get("ForceEnable");
+            miDisable.Text = Loc.Get("ForceDisable");
+            miSettings.Text = Loc.Get("Settings");
+            miExit.Text = Loc.Get("Exit");
+            trayIcon.Text = Loc.Get("SettingsTitle");
+        }
+
         private void OpenSettings(object sender, EventArgs e)
         {
             List<MonitorInfo> allMonitors = GetAllMonitors();
@@ -761,6 +929,7 @@ namespace WuRuDisplayTouch
             {
                 if (sf.ShowDialog() == DialogResult.OK)
                 {
+                    UpdateLanguage();
                     CheckDisplayAndToggleTouch();
                 }
             }
@@ -776,7 +945,6 @@ namespace WuRuDisplayTouch
             List<MonitorInfo> monitors = new List<MonitorInfo>();
             try
             {
-                // First pass: gather internal connection info from WMI
                 Dictionary<string, bool> wmiInternalMap = new Dictionary<string, bool>();
                 try 
                 {
@@ -791,7 +959,7 @@ namespace WuRuDisplayTouch
                         string[] parts = instanceName.Split('\\');
                         if (parts.Length > 1) 
                         {
-                            wmiInternalMap[parts[1]] = isInternal; // Map by Hardware ID (e.g. DELA154)
+                            wmiInternalMap[parts[1]] = isInternal; 
                         }
                     }
                 } catch { }
@@ -802,9 +970,9 @@ namespace WuRuDisplayTouch
 
                 while (NativeMethods.EnumDisplayDevices(null, devNum, ref d, 0))
                 {
-                    if ((d.StateFlags & 0x1) == 0x1) // ATTACHED_TO_DESKTOP
+                    if ((d.StateFlags & 0x1) == 0x1) 
                     {
-                        bool isPrimary = (d.StateFlags & 0x4) == 0x4; // PRIMARY_DEVICE
+                        bool isPrimary = (d.StateFlags & 0x4) == 0x4; 
                         
                         NativeMethods.DISPLAY_DEVICE mon = new NativeMethods.DISPLAY_DEVICE();
                         mon.cb = Marshal.SizeOf(mon);
@@ -821,7 +989,7 @@ namespace WuRuDisplayTouch
                             }
                             else
                             {
-                                isInternal = isPrimary; // Fallback
+                                isInternal = isPrimary; 
                             }
 
                             monitors.Add(new MonitorInfo
@@ -838,7 +1006,7 @@ namespace WuRuDisplayTouch
                             monitors.Add(new MonitorInfo
                             {
                                 AdapterName = d.DeviceName,
-                                DeviceID = d.DeviceName, // fallback ID
+                                DeviceID = d.DeviceName, 
                                 DisplayName = d.DeviceString,
                                 IsPrimary = isPrimary,
                                 IsInternal = isPrimary
@@ -855,38 +1023,17 @@ namespace WuRuDisplayTouch
 
         private void CheckDisplayAndToggleTouch()
         {
+            List<MonitorInfo> activeMonitors = GetAllMonitors();
+
             if (Settings.TouchAutoMode)
             {
-                bool internalDisplayActive = false;
-                try
-                {
-                    var searcher = new ManagementObjectSearcher("root\\wmi", "SELECT * FROM WmiMonitorConnectionParams");
-                    foreach (ManagementObject queryObj in searcher.Get())
-                    {
-                        uint tech = 0;
-                        try { tech = Convert.ToUInt32(queryObj["VideoOutputTechnology"]); } catch { continue; }
-                        // 11 = eDP, 7 = LVDS, 2147483648 (0x80000000) = Internal
-                        if (tech == 11 || tech == 7 || tech == 2147483648)
-                        {
-                            internalDisplayActive = true;
-                            break;
-                        }
-                    }
-                }
-                catch { }
-
-                if (Screen.AllScreens.Length > 1)
-                {
-                    internalDisplayActive = true; 
-                }
-
+                bool internalDisplayActive = activeMonitors.Any(m => m.IsInternal);
                 SetTouchscreenState(internalDisplayActive);
             }
 
             if (Settings.EnableGlobalDisplayEnforcer)
             {
-                List<MonitorInfo> allMonitors = GetAllMonitors();
-                foreach (var monitor in allMonitors)
+                foreach (var monitor in activeMonitors)
                 {
                     if (Settings.GetEnable(monitor.DeviceID))
                     {
@@ -1017,8 +1164,8 @@ namespace WuRuDisplayTouch
                 var p = Process.Start(psi);
                 if (p != null) p.WaitForExit();
                 
-                string statusMsg = enable ? "เปิด Touchscreen (จอหลักทำงาน)" : "ปิด Touchscreen (ต่อจอนอก)";
-                trayIcon.ShowBalloonTip(2000, "WuRuDisplayTouch", statusMsg, ToolTipIcon.Info);
+                string statusMsg = enable ? Loc.Get("TouchEnabled") : Loc.Get("TouchDisabled");
+                trayIcon.ShowBalloonTip(2000, Loc.Get("SettingsTitle"), statusMsg, ToolTipIcon.Info);
             }
             catch { }
         }
