@@ -1,45 +1,39 @@
-# WuRuDisplayTouch 🖐️🐈
+# WuRuDisplayTouch 🖐️🐈 & 🖥️✨
 
-**WuRuDisplayTouch** is a lightweight, automatic background utility designed specifically for Windows gaming handhelds and tablets (like the **Lenovo Legion Go / Legion Go 2**) to automatically **disable the touchscreen** when connected to an external monitor in "Second screen only" mode. 
+**WuRuDisplayTouch** is a lightweight, automatic background utility originally designed to prevent "ghost touches" from cats sleeping on Windows gaming handhelds (like the **Lenovo Legion Go / Legion Go 2**) when connected to an external monitor. It has now evolved to include **Global Display Enforcer**, a powerful feature that automatically locks and applies your preferred resolution and refresh rate specifically for each external monitor you connect.
 
-**WuRuDisplayTouch** เป็นโปรแกรมขนาดเล็กที่ทำงานเบื้องหลัง สร้างขึ้นมาเพื่อเครื่องเล่นเกมพกพาและแท็บเล็ตระบบ Windows (เช่น **Lenovo Legion Go / Legion Go 2**) โดยเฉพาะ โปรแกรมจะทำหน้าที่ **ปิดระบบสัมผัสหน้าจอ (Touchscreen)** ให้อัตโนมัติเมื่อมีการต่อจอนอกและเลือกโหมด "Second screen only" (ใช้จอที่สองเท่านั้น)
+**WuRuDisplayTouch** เป็นโปรแกรมขนาดเล็กที่ทำงานเบื้องหลัง เริ่มแรกถูกสร้างขึ้นเพื่อแก้ปัญหา "น้องแมว" ไปโดนจอทัชสกรีนบนเครื่องเล่นเกมพกพา (เช่น **Lenovo Legion Go / Legion Go 2**) เวลาต่อจอนอก ปัจจุบันได้รับการพัฒนาเพิ่มฟีเจอร์ **Global Display Enforcer** ซึ่งเป็นระบบช่วยล็อคและปรับความละเอียด (Resolution) รวมไปถึงอัตรารีเฟรช (Refresh Rate) ของจอนอกแต่ละตัวให้ถูกต้องแบบอัตโนมัติ 
 
 ---
 
 ## 🌟 Why this exists / ทำไมถึงต้องมีโปรแกรมนี้?
 
-### 🇬🇧 English
-If you own a Lenovo Legion Go 2 and often connect it to an external monitor to work or play games, you might set your display to "Second screen only". However, Windows often leaves the built-in touchscreen active even when the screen is black. 
-If you have a cat that likes to sleep on your desk and accidentally steps on your Legion Go's screen, it will cause "ghost touches" or interfere with your mouse cursor! 
-**WuRuDisplayTouch** solves this by seamlessly disabling the touchscreen device automatically when you project to an external monitor, and enabling it back when you disconnect. It does **not** disable the built-in touchpad, so you always have a fallback.
-
-**Keywords for search engines:** *Disable touchscreen Legion Go 2, Auto turn off touch screen Windows 11 external monitor, Legion Go ghost touch second screen, disable HID-compliant touch screen, cat stepping on tablet screen fix, Legion Go external display issues.*
-
 ### 🇹🇭 ภาษาไทย
-หากคุณใช้ Lenovo Legion Go 2 และต่อจอนอก (External Monitor) เพื่อทำงานหรือเล่นเกม โดยตั้งค่าจอเป็น "Second screen only" (จอที่สองเท่านั้น) หน้าจอของเครื่องจะดับลง แต่ระบบสัมผัส (Touchscreen) มักจะยังคงทำงานอยู่
-ปัญหาจะเกิดเมื่อคุณมี **"น้องแมว"** ที่ชอบมานอนเล่นบนโต๊ะทำงาน แล้วเผลอเอาเท้าไปเหยียบหรือนอนทับจอ Legion Go ของคุณ ทำให้เมาส์ขยับเอง หรือเกิดการรบกวนการทำงาน (Ghost touch)
-**WuRuDisplayTouch** แก้ปัญหานี้โดยการตรวจจับสถานะหน้าจอ และสั่งปิด Touchscreen ให้ทันทีที่จอเครื่องไม่ได้ถูกใช้งาน และจะเปิดกลับมาอัตโนมัติเมื่อคุณถอดสายจอออก โดยตัวโปรแกรมจะ**ไม่ไปยุ่งกับ Touchpad (แป้นสัมผัส)** ของเครื่อง ทำให้คุณยังมีเมาส์สำรองไว้ใช้งานเสมอ
+หากคุณใช้ Lenovo Legion Go 2 และต่อจอนอก (External Monitor) เพื่อทำงานหรือเล่นเกม คุณมักจะเจอปัญหา 2 อย่างนี้:
+1. **ปัญหาทัชสกรีนลั่น:** เมื่อคุณตั้งจอเป็น "Second screen only" จอของเครื่องจะดับลง แต่ระบบสัมผัส (Touchscreen) มักจะยังคงทำงานอยู่ หากน้องแมวมานอนทับจอ เมาส์ก็จะขยับมั่วไปหมด! (WuRuDisplayTouch ช่วยปิดการทำงานของ Touchscreen ให้ทันทีเมื่อจอหลักไม่ได้แสดงผล)
+2. **ปัญหาสเกลจอเพี้ยนเมื่อต่อจอนอก:** เวลาต่อจอนอกหรือเวลาเปลี่ยนการตั้งค่าผ่านเมนูด่วน (Quick Settings) ของตัวเครื่อง สเกลของจอนอกมักจะเพี้ยนหรือถูกดึงไม่ถูกต้อง (WuRuDisplayTouch ช่วยให้คุณสามารถ "ล็อค" ค่าความละเอียดและ Hz ของจอแต่ละตัวได้ เมื่อคุณเสียบจอ โปรแกรมจะจดจำและปรับค่าให้ถูกต้องเป๊ะๆ ทุกครั้ง!)
 
-**คีย์เวิร์ดสำหรับค้นหา:** *วิธีปิดหน้าจอสัมผัส Legion Go, โปรแกรมปิดทัชสกรีนอัตโนมัติเวลาต่อจอนอก, แมวเหยียบจอเมาส์ขยับ, ปิด Touch screen Windows 11, Legion Go 2 ต่อจอนอกปิดทัชไม่ได้, วิธีแก้จอสัมผัสลั่น*
+### 🇬🇧 English
+If you own a Lenovo Legion Go 2 and often connect it to an external monitor, you face two common issues:
+1. **Ghost Touches:** In "Second screen only" mode, the built-in touchscreen remains active. If your cat steps on the screen, it ruins your gameplay/work. (WuRuDisplayTouch automatically disables the touchscreen when the internal display is not in use).
+2. **Messy Display Scaling:** When connecting to an external monitor or changing settings via the device's Quick Settings, the external monitor's scale often becomes messy or is pulled incorrectly. (WuRuDisplayTouch allows you to "lock" the resolution and Hz for each individual monitor. Whenever you plug in a monitor, the program remembers and applies the perfectly correct settings every time!)
 
 ---
 
 ## 🚀 Features / คุณสมบัติ
 
-- **Auto-Detect Display Topology:** Automatically detects if the internal display is attached to the Windows desktop. / *ระบบตรวจจับหน้าจออัตโนมัติ รู้ได้ทันทีว่าจอหลักทำงานอยู่หรือไม่*
-- **Targeted Disable:** Disables only the "HID-compliant touch screen" and leaves the Trackpad/Mouse fully functional. / *เจาะจงปิดเฉพาะทัชสกรีน โดยไม่กระทบการทำงานของทัชแพด*
-- **System Tray Integration:** Runs quietly in the system tray with minimal resource usage. / *ทำงานเงียบๆ ซ่อนอยู่ใน System Tray ไม่กินสเปคเครื่อง*
-- **Bypass UAC at Startup:** Can be set to run automatically on Windows startup using a Scheduled Task, bypassing the annoying Administrator prompt. / *สามารถตั้งค่าให้เปิดพร้อมเปิดเครื่องได้ทันที โดยไม่มีหน้าต่างขอสิทธิ์ Admin มากวนใจ*
+- **Smart Touchscreen Auto Mode:** Automatically detects if the internal display is active and toggles the touchscreen device accordingly. *ระบบเปิด/ปิด Touchscreen อัตโนมัติ ป้องกันแมวเหยียบจอ โดยไม่กระทบการทำงานของทัชแพด/เมาส์*
+- **Global Display Enforcer:** Lock the perfect Resolution and Refresh rate for your external monitors. *ระบบล็อคความละเอียดหน้าจอและ Hz สำหรับจอนอก*
+- **Hardware-Based Monitor Memory:** Remembers settings per-monitor based on their unique Hardware ID. Connect your office monitor during the day and your home monitor at night—the program seamlessly switches to the correct saved settings for each. *จดจำการตั้งค่าแยกตามจอแต่ละรุ่น (Device ID) เสียบจอที่ทำงานตอนเช้า เสียบจอที่บ้านตอนกลางคืน โปรแกรมก็รู้และเปลี่ยนค่าให้ตรงกับจอนั้นๆ โดยอัตโนมัติ*
+- **Centralized Settings UI:** Double-click the tray icon to easily configure everything. *รวมการตั้งค่าทุกอย่างไว้ในหน้าต่างเดียว เปิดง่ายๆ แค่ดับเบิลคลิกไอคอน*
+- **Run on Startup (Bypass UAC):** Can be set to run automatically on Windows startup using a Scheduled Task, bypassing the annoying Administrator prompt. *สามารถตั้งให้เปิดพร้อม Windows ได้ทันทีโดยไม่ติดสิทธิ์ Admin*
+
+---
 
 ## 🛠 How to Use / วิธีการใช้งาน
 
-1. Download or compile the `WuRuDisplayTouch.exe`.
-2. Right-click and choose **"Run as administrator"** (Run as admin is required to enable/disable hardware devices).
-3. The app icon will appear in the system tray (bottom right corner). 
-4. Right click the tray icon and select **"เปิดพร้อม Windows (Run on Startup)"** to ensure it starts automatically with high privileges on every boot.
-
----
-1. ดาวน์โหลดหรือคอมไพล์ไฟล์ `WuRuDisplayTouch.exe`
-2. คลิกขวาที่ไฟล์ เลือก **"Run as administrator"** (จำเป็นต้องใช้สิทธิ์ผู้ดูแลระบบเพื่อสั่งปิด/เปิดอุปกรณ์ฮาร์ดแวร์)
-3. ไอคอนโปรแกรมจะปรากฏที่ System Tray (มุมขวาล่างของจอ)
-4. คลิกขวาที่ไอคอน แล้วเลือก **"เปิดพร้อม Windows (Run on Startup)"** เพื่อให้โปรแกรมทำงานอัตโนมัติทุกครั้งที่เปิดเครื่องโดยไม่ต้องมากดเอง
+1. Download the latest release `.zip` and extract it. (ดาวน์โหลดไฟล์ `.zip` จากหน้า Release แล้วแตกไฟล์)
+2. Right-click on `WuRuDisplayTouch.exe` and choose **"Run as administrator"**. (คลิกขวาที่ไฟล์ เลือก Run as admin เพราะโปรแกรมต้องใช้สิทธิ์ในการปิด/เปิดฮาร์ดแวร์และปรับตั้งค่าระบบ)
+3. The app icon will appear in the system tray (bottom right corner). Double-click the icon to open the Settings window. (ดับเบิลคลิกไอคอนรูปโล่ที่มุมขวาล่างเพื่อเปิดหน้าต่างตั้งค่า)
+4. Check **"เปิดโปรแกรมพร้อม Windows (Run on Startup)"** so you never have to manually run it again. (แนะนำให้ติ๊กช่องเปิดพร้อม Windows ไว้เลย)
+5. Select your connected monitor from the dropdown and configure your preferred locked resolution/Hz. (เลือกจอนอกที่ต้องการตั้งค่า แล้วเลือกล็อคความละเอียดและ Refresh Rate ได้ตามใจชอบ)
